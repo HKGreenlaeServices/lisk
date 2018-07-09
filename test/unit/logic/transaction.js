@@ -904,7 +904,7 @@ describe('transaction', () => {
 		});
 	});
 
-	describe('apply', () => {
+	describe('applyConfirmed', () => {
 		var dummyBlock = {
 			id: '9314232245035524467',
 			height: 1,
@@ -916,19 +916,24 @@ describe('transaction', () => {
 
 		it('should throw an error with no param', () => {
 			return expect(() => {
-				transactionLogic.apply();
+				transactionLogic.applyConfirmed();
 			}).to.throw();
 		});
 
 		it('should be okay with valid params', done => {
-			transactionLogic.apply(unconfirmedTransaction, dummyBlock, sender, done);
+			transactionLogic.applyConfirmed(
+				unconfirmedTransaction,
+				dummyBlock,
+				sender,
+				done
+			);
 		});
 
 		it('should return error on if balance is low', done => {
 			var transaction = _.cloneDeep(validTransaction);
 			transaction.amount = '9850458911801908';
 
-			transactionLogic.apply(transaction, dummyBlock, sender, err => {
+			transactionLogic.applyConfirmed(transaction, dummyBlock, sender, err => {
 				expect(err).to.include('Account does not have enough ');
 				done();
 			});
@@ -943,21 +948,28 @@ describe('transaction', () => {
 					);
 					var balanceBefore = new bignum(accountBefore.balance.toString());
 
-					transactionLogic.apply(validTransaction, dummyBlock, sender, () => {
-						accountModule.getAccount(
-							{ publicKey: validTransaction.senderPublicKey },
-							(err, accountAfter) => {
-								expect(err).to.not.exist;
-								var balanceAfter = new bignum(accountAfter.balance.toString());
+					transactionLogic.applyConfirmed(
+						validTransaction,
+						dummyBlock,
+						sender,
+						() => {
+							accountModule.getAccount(
+								{ publicKey: validTransaction.senderPublicKey },
+								(err, accountAfter) => {
+									expect(err).to.not.exist;
+									var balanceAfter = new bignum(
+										accountAfter.balance.toString()
+									);
 
-								expect(err).to.not.exist;
-								expect(balanceAfter.plus(amount).toString()).to.equal(
-									balanceBefore.toString()
-								);
-								undoTransaction(validTransaction, sender, done);
-							}
-						);
-					});
+									expect(err).to.not.exist;
+									expect(balanceAfter.plus(amount).toString()).to.equal(
+										balanceBefore.toString()
+									);
+									undoTransaction(validTransaction, sender, done);
+								}
+							);
+						}
+					);
 				}
 			);
 		});
@@ -969,8 +981,8 @@ describe('transaction', () => {
 			height: 1,
 		};
 
-		function applyTransaction(transaction, sender, done) {
-			transactionLogic.apply(transaction, dummyBlock, sender, done);
+		function applyConfirmedTransaction(transaction, sender, done) {
+			transactionLogic.applyConfirmed(transaction, dummyBlock, sender, done);
 		}
 
 		it('should throw an error with no param', () => {
@@ -1030,7 +1042,7 @@ describe('transaction', () => {
 								expect(balanceBefore.plus(amount).toString()).to.equal(
 									balanceAfter.toString()
 								);
-								applyTransaction(transaction, sender, done);
+								applyConfirmedTransaction(transaction, sender, done);
 							}
 						);
 					});

@@ -158,7 +158,7 @@ describe('blocks/chain', () => {
 
 		const modulesTransactionsStub = {
 			applyUnconfirmed: sinonSandbox.stub(),
-			apply: sinonSandbox.stub(),
+			applyConfirmed: sinonSandbox.stub(),
 			receiveTransactions: sinonSandbox.stub(),
 			undo: sinonSandbox.stub(),
 			undoUnconfirmed: sinonSandbox.stub(),
@@ -639,9 +639,13 @@ describe('blocks/chain', () => {
 				);
 			});
 
-			describe('when modules.transactions.apply fails', () => {
+			describe('when modules.transactions.applyConfirmed fails', () => {
 				beforeEach(() => {
-					return modules.transactions.apply.callsArgWith(3, 'apply-ERR', null);
+					return modules.transactions.applyConfirmed.callsArgWith(
+						3,
+						'apply-ERR',
+						null
+					);
 				});
 
 				it('should call a callback with error', done => {
@@ -650,7 +654,9 @@ describe('blocks/chain', () => {
 						{ id: 1, type: 1 },
 						'a1',
 						err => {
-							expect(err.message).to.equal('Failed to apply transaction: 1');
+							expect(err.message).to.equal(
+								'Failed to applyConfirmed transaction: 1'
+							);
 							expect(err.transaction).to.deep.equal({ id: 1, type: 1 });
 							expect(err.block).to.deep.equal(blockWithTransactions);
 							done();
@@ -659,9 +665,13 @@ describe('blocks/chain', () => {
 				});
 			});
 
-			describe('when modules.transactions.apply succeeds', () => {
+			describe('when modules.transactions.applyConfirmed succeeds', () => {
 				beforeEach(() => {
-					return modules.transactions.apply.callsArgWith(3, null, true);
+					return modules.transactions.applyConfirmed.callsArgWith(
+						3,
+						null,
+						true
+					);
 				});
 
 				it('should call a callback with no error', done => {
@@ -672,7 +682,7 @@ describe('blocks/chain', () => {
 						() => {
 							expect(modules.transactions.applyUnconfirmed.calledOnce).to.be
 								.true;
-							expect(modules.transactions.apply.calledOnce).to.be.true;
+							expect(modules.transactions.applyConfirmed.calledOnce).to.be.true;
 							done();
 						}
 					);
@@ -889,7 +899,7 @@ describe('blocks/chain', () => {
 								'Failed to get account to apply transaction: 6 - getAccount-ERR'
 							);
 							expect(modules.accounts.getAccount.callCount).to.equal(1);
-							expect(modules.transactions.apply.callCount).to.equal(0);
+							expect(modules.transactions.applyConfirmed.callCount).to.equal(0);
 							expect(loggerStub.error.args[0][0]).to.equal(
 								'Failed to get account to apply transaction: 6 - getAccount-ERR'
 							);
@@ -909,7 +919,7 @@ describe('blocks/chain', () => {
 
 				describe('when library.logic.transaction.apply fails', () => {
 					beforeEach(() => {
-						return modules.transactions.apply.callsArgWith(
+						return modules.transactions.applyConfirmed.callsArgWith(
 							3,
 							'apply-ERR',
 							null
@@ -925,7 +935,9 @@ describe('blocks/chain', () => {
 									'Failed to apply transaction: 6 - apply-ERR'
 								);
 								expect(modules.accounts.getAccount.callCount).to.equal(1);
-								expect(modules.transactions.apply.callCount).to.equal(1);
+								expect(modules.transactions.applyConfirmed.callCount).to.equal(
+									1
+								);
 								expect(loggerStub.error.args[0][0]).to.equal(
 									'Failed to apply transaction: 6 - apply-ERR'
 								);
@@ -940,7 +952,11 @@ describe('blocks/chain', () => {
 
 				describe('when library.logic.transaction.apply succeeds', () => {
 					beforeEach(() => {
-						return modules.transactions.apply.callsArgWith(3, null, true);
+						return modules.transactions.applyiConfirmed.callsArgWith(
+							3,
+							null,
+							true
+						);
 					});
 					it('should return resolved promise with no error', done => {
 						__private

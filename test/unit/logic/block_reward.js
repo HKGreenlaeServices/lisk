@@ -15,7 +15,7 @@
 'use strict';
 
 const BlockReward = require('../../../logic/block_reward.js');
-const constants = require('../../../config/mainnet/constants.js');
+const constants = require('../../../config/devnet/constants.js');
 
 constants.rewards.distance = 3000000;
 constants.rewards.offset = 1451520;

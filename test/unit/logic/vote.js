@@ -96,7 +96,7 @@ describe('vote', () => {
 		async.parallel(
 			[
 				function(cb) {
-					vote.apply(transaction, dummyBlock, validSender, cb);
+					vote.applyConfirmed(transaction, dummyBlock, validSender, cb);
 				},
 				function(cb) {
 					vote.applyUnconfirmed(transaction, validSender, cb);
@@ -201,7 +201,7 @@ describe('vote', () => {
 			blockId: '8505659485551877884',
 		};
 
-		transactionLogic.apply(sendTransaction, dummyBlock, sender, done);
+		transactionLogic.applyConfirmed(sendTransaction, dummyBlock, sender, done);
 	});
 
 	before(done => {
@@ -557,13 +557,13 @@ describe('vote', () => {
 		});
 	});
 
-	describe('apply', () => {
+	describe('applyConfirmed', () => {
 		it('should remove votes for delegates', done => {
 			var transaction = _.clone(validTransaction);
 			transaction.asset.votes = votedDelegates.map(v => {
 				return `-${v}`;
 			});
-			vote.apply(transaction, dummyBlock, validSender, () => {
+			vote.applyConfirmed(transaction, dummyBlock, validSender, () => {
 				checkAccountVotes(
 					transaction.senderPublicKey,
 					'confirmed',
@@ -579,7 +579,7 @@ describe('vote', () => {
 			transaction.asset.votes = votedDelegates.map(v => {
 				return `+${v}`;
 			});
-			vote.apply(transaction, dummyBlock, validSender, () => {
+			vote.applyConfirmed(transaction, dummyBlock, validSender, () => {
 				checkAccountVotes(
 					transaction.senderPublicKey,
 					'confirmed',
